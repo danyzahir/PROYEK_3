@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'absensi_guru.dart';
 
 class AbsensiScreen extends StatelessWidget {
   const AbsensiScreen({super.key});
@@ -74,7 +75,15 @@ class AbsensiScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _menuItem("Absensi Guru", Icons.people_alt),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AbsensiGuruPage()),
+                        );
+                      },
+                      child: _menuItem("Absensi Guru", Icons.people_alt),
+                    ),
                     const SizedBox(width: 20), // Spasi antar kotak
                     _menuItem("Absensi SDIT", Icons.school),
                   ],
