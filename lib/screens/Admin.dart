@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
-import 'absensi.dart';
-import 'nilai.dart';
-import 'data_guru_anak.dart';
-import 'rekap_absensi.dart';
+import 'akun_guru.dart'; // <- Pastikan file ini ada
 
-class HomeScreen extends StatelessWidget {
+class AdminDashboard extends StatelessWidget {
   final String username;
 
-  const HomeScreen({super.key, required this.username});
+  const AdminDashboard({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +14,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       body: Column(
         children: [
-          // Header hijau
+          // Header
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
             decoration: const BoxDecoration(
@@ -82,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
                 const Text(
-                  "DASHBOARD",
+                  "DASHBOARD ADMIN",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -93,9 +90,9 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 20),
 
-          // Pengumuman
+          // Info Agenda
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -113,12 +110,12 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               child: Row(
-                children: [
-                  const Icon(Icons.calendar_today, color: Colors.black54, size: 16),
-                  const SizedBox(width: 10),
+                children: const [
+                  Icon(Icons.calendar_today, color: Colors.black54, size: 16),
+                  SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         "Rabu, 13 Oktober 2023",
                         style: TextStyle(fontSize: 12, color: Colors.black54),
@@ -136,7 +133,7 @@ class HomeScreen extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // Grid Menu
+          // Menu Grid
           Expanded(
             child: GridView.count(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -144,92 +141,55 @@ class HomeScreen extends StatelessWidget {
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               childAspectRatio: 1.2,
-              shrinkWrap: true,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AbsensiScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Absensi", Icons.people_alt),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NilaiScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Nilai", Icons.school),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DataScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Data Siswa & Guru", Icons.person),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RekapScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Rekap Absensi", Icons.receipt_long),
-                ),
+                _menuItem("Akun Guru", Icons.group, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AkunGuruScreen(username: username),
+                    ),
+                  );
+                }),
+                _menuItem("Edit Agenda", Icons.edit_calendar, () {}),
+                _menuItem("Data Siswa & Guru", Icons.person_pin, () {}),
               ],
             ),
           ),
 
-          const SizedBox(height: 15),
-          const Text(
-            "© 2024 Powered by Nahdlatut Tujjar",
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 70), // Spacer bawah
         ],
       ),
     );
   }
 
-  Widget _menuItem(String title, IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 4,
-            spreadRadius: 2,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 35, color: Colors.black),
-          const SizedBox(height: 5),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-          ),
-        ],
+  Widget _menuItem(String title, IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 4,
+              spreadRadius: 2,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 35, color: Colors.black),
+            const SizedBox(height: 5),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }

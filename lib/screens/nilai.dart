@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'absensi_guru.dart';
+import 'absensi.dart';
 import 'home_screen.dart';
-import 'nilai.dart';
 import 'data_guru_anak.dart';
 import 'rekap_absensi.dart';
-import '../widgets/user_menu.dart'; // ✅ tambahkan ini
+import '../widgets/user_menu.dart';
 
-class AbsensiScreen extends StatelessWidget {
+class NilaiScreen extends StatelessWidget {
   final String username;
 
-  const AbsensiScreen({super.key, required this.username});
+  const NilaiScreen({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class AbsensiScreen extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       body: Column(
         children: [
-          // Header
+          // Header Hijau
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 45),
             decoration: const BoxDecoration(
@@ -43,14 +42,14 @@ class AbsensiScreen extends StatelessWidget {
                           style: const TextStyle(fontSize: 16, color: Colors.white),
                         ),
                         const SizedBox(width: 10),
-                        UserMenu(username: username), // ✅ ganti avatar jadi user menu
+                        UserMenu(username: username),
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: 15),
                 const Text(
-                  "ABSENSI",
+                  "NILAI",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -63,7 +62,7 @@ class AbsensiScreen extends StatelessWidget {
 
           const SizedBox(height: 15),
 
-          // Info Box
+          // Pengumuman
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -104,7 +103,7 @@ class AbsensiScreen extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // Menu Grid
+          // Grid Menu
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -117,18 +116,8 @@ class AbsensiScreen extends StatelessWidget {
                       mainAxisSpacing: 12,
                       childAspectRatio: 1.2,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AbsensiGuruPage(username: username),
-                              ),
-                            );
-                          },
-                          child: _menuItem("Absensi Guru", Icons.people_alt),
-                        ),
-                        _menuItem("Absensi SDIT", Icons.people_alt),
+                        _menuItem("Nilai SDIT", Icons.my_library_books_rounded),
+                        _menuItem("Nilai TKQ", Icons.my_library_books_rounded),
                       ],
                     ),
                   ),
@@ -138,7 +127,7 @@ class AbsensiScreen extends StatelessWidget {
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.4,
                         height: MediaQuery.of(context).size.width * 0.361,
-                        child: _menuItem("Absensi TKQ", Icons.people_alt),
+                        child: _menuItem("Rekap Nilai", Icons.my_library_books_rounded),
                       ),
                     ),
                   ),
@@ -149,7 +138,7 @@ class AbsensiScreen extends StatelessWidget {
 
           const SizedBox(height: 15),
 
-          // Bottom Navigation
+          // Bottom Navigation Bar
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: const BoxDecoration(
@@ -171,8 +160,8 @@ class AbsensiScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _navItem(context, "Dashboard", Icons.home, HomeScreen(username: username), false),
-                _navItem(context, "Absensi", Icons.assignment_ind_rounded, AbsensiScreen(username: username), true),
-                _navItem(context, "Nilai", Icons.my_library_books_rounded, NilaiScreen(username: username), false),
+                _navItem(context, "Absensi", Icons.assignment_ind_rounded, AbsensiScreen(username: username), false),
+                _navItem(context, "Nilai", Icons.my_library_books_rounded, NilaiScreen(username: username), true),
                 _navItem(context, "Data Guru & Anak", Icons.person, DataScreen(username: username), false),
                 _navItem(context, "Rekap Absensi", Icons.receipt_long, RekapScreen(username: username), false),
               ],
@@ -212,13 +201,7 @@ class AbsensiScreen extends StatelessWidget {
     );
   }
 
-  Widget _navItem(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Widget page,
-    bool isActive,
-  ) {
+  Widget _navItem(BuildContext context, String title, IconData icon, Widget page, bool isActive) {
     return GestureDetector(
       onTap: () {
         if (!isActive) {

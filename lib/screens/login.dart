@@ -1,28 +1,15 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; // Import file HomeScreen
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
-    );
-  }
-}
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'home_screen.dart';
+import 'Admin.dart'; // import halaman admin
+import 'akun_guru.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -36,21 +23,68 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _login() {
-    String username = usernameController.text.trim();
+  void _login() async {
+    String inputUsername = usernameController.text.trim();
     String password = passwordController.text.trim();
 
-    if (username == "admin" && password == "admin123") {
-      // Jika login berhasil, navigasi ke HomeScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    } else {
-      // Jika login gagal
+    if (inputUsername.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Username atau password salah!"),
+          content: Text('Username dan password harus diisi'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final usersRef = FirebaseFirestore.instance.collection('users');
+      final querySnapshot =
+          await usersRef.where('username', isEqualTo: inputUsername).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        throw FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'Username tidak ditemukan',
+        );
+      }
+
+      final userDoc = querySnapshot.docs.first;
+      final email = userDoc['email'];
+      final role = userDoc['role'];
+      final username = userDoc['username'];
+
+      // Login dengan email dan password
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Navigasi berdasarkan role
+      if (role == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdminDashboard(username: username),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(username: username),
+          ),
+        );
+      }
+    } catch (e) {
+      String errorMessage = 'Login gagal: ${e.toString()}';
+      if (e is FirebaseAuthException) {
+        errorMessage = e.message ?? errorMessage;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
         ),
       );
@@ -74,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: Center(
               child: Image.asset(
-                'images/icon.png', // Ganti dengan path gambar yang sesuai
+                'images/icon.png',
                 height: 200,
               ),
             ),
@@ -107,7 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: _obscureText,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                      _obscureText
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: _togglePasswordVisibility,
                   ),
@@ -116,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _login, // Memanggil fungsi login
+                    onPressed: _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(
@@ -130,8 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-                // Tambahkan Copyright di bawah tombol login
+                const SizedBox(height: 10),
                 const Text(
                   '© 2025 TKQ & SDIT Nahdlatut Tujjar',
                   style: TextStyle(fontSize: 14, color: Colors.black54),

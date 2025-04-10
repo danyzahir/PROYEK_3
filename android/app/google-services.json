@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "180027370820",
+    "project_id": "nahdatultujjar",
+    "storage_bucket": "nahdatultujjar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180027370820:android:c60dcb47978676f9b9fb11",
+        "android_client_info": {
+          "package_name": "com.example.proyek3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzrq4MMB9TuCJBTYzYQ3Rq6gKEwxjHQbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

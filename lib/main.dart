@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
-import 'screens/login.dart'; 
-import 'screens/home_screen.dart'; 
-import 'screens/absensi.dart'; // Import halaman Absensi
+import 'package:firebase_core/firebase_core.dart';
+import 'screens/login.dart';
+import 'screens/home_screen.dart';
+import 'screens/absensi.dart';
+import 'screens/nilai.dart';
+import 'screens/data_guru_anak.dart';
+import 'screens/rekap_absensi.dart';
+import 'screens/Admin.dart';
+import 'screens/firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -18,11 +28,44 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      initialRoute: '/', // Mulai dari halaman Login
+      initialRoute: '/',
       routes: {
-        '/': (context) => const LoginScreen(), // Halaman pertama
-        '/home': (context) => const HomeScreen(), // Halaman Home setelah login
-        '/absensi': (context) => const AbsensiScreen(), // Tambahkan route ke Absensi
+        '/': (context) => const LoginScreen(),
+        // Jangan taruh AbsensiScreen di sini karena butuh parameter username
+      },
+      onGenerateRoute: (settings) {
+        final args = settings.arguments;
+
+        switch (settings.name) {
+          case '/home':
+            return MaterialPageRoute(
+              builder: (context) => HomeScreen(username: args as String),
+            );
+          case '/admin':
+            return MaterialPageRoute(
+              builder: (context) => AdminDashboard(username: args as String),
+            );
+          case '/absensi':
+            return MaterialPageRoute(
+              builder: (context) => AbsensiScreen(username: args as String),
+            );
+          case '/nilai':
+            return MaterialPageRoute(
+              builder: (context) => NilaiScreen(username: args as String),
+            );
+          case '/data':
+            return MaterialPageRoute(
+              builder: (context) => DataScreen(username: args as String),
+            );
+          case '/rekap':
+            return MaterialPageRoute(
+              builder: (context) => RekapScreen(username: args as String),
+            );
+          default:
+            return MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            );
+        }
       },
     );
   }

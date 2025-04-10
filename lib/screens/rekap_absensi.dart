@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login.dart';
 import 'absensi.dart';
+import 'home_screen.dart';
 import 'nilai.dart';
 import 'data_guru_anak.dart';
-import 'rekap_absensi.dart';
+import 'login.dart';
 
-class HomeScreen extends StatelessWidget {
+class RekapScreen extends StatelessWidget {
   final String username;
 
-  const HomeScreen({super.key, required this.username});
+  const RekapScreen({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +17,9 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       body: Column(
         children: [
-          // Header hijau
+          // Header Hijau
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 45),
             decoration: const BoxDecoration(
               color: Colors.green,
               borderRadius: BorderRadius.only(
@@ -29,13 +29,12 @@ class HomeScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                // Logo dan User Menu
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Image.asset(
-                      'images/icon.png',
-                      height: 50,
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
                     ),
                     Row(
                       children: [
@@ -70,10 +69,10 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                           ],
-                          child: CircleAvatar(
-                            backgroundColor: Colors.grey[300],
+                          child: const CircleAvatar(
+                            backgroundColor: Colors.white,
                             radius: 18,
-                            child: const Icon(Icons.person, color: Colors.black),
+                            child: Icon(Icons.person, color: Colors.black),
                           ),
                         ),
                       ],
@@ -82,7 +81,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
                 const Text(
-                  "DASHBOARD",
+                  "REKAP ABSENSI",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -138,68 +137,54 @@ class HomeScreen extends StatelessWidget {
 
           // Grid Menu
           Expanded(
-            child: GridView.count(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.2,
-              shrinkWrap: true,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AbsensiScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Absensi", Icons.people_alt),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NilaiScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Nilai", Icons.school),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DataScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Data Siswa & Guru", Icons.person),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RekapScreen(username: username),
-                      ),
-                    );
-                  },
-                  child: _menuItem("Rekap Absensi", Icons.receipt_long),
-                ),
-              ],
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.2,
+                children: [
+                  _menuItem("Rekap Absensi \n Guru SDIT", Icons.people),
+                  _menuItem("Rekap Absensi \n Guru TKQ", Icons.people),
+                  _menuItem("Rekap Absensi \n Anak SDIT", Icons.people),
+                  _menuItem("Rekap Absensi \n Anak TKQ", Icons.people),
+                ],
+              ),
             ),
           ),
 
           const SizedBox(height: 15),
-          const Text(
-            "© 2024 Powered by Nahdlatut Tujjar",
-            style: TextStyle(fontSize: 12, color: Colors.black54),
+
+          // Bottom Navigation Bar
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 5,
+                  spreadRadius: 2,
+                  offset: Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _navItem(context, "Dashboard", Icons.home, HomeScreen(username: username), false),
+                _navItem(context, "Absensi", Icons.assignment_ind_rounded, AbsensiScreen(username: username), false),
+                _navItem(context, "Nilai", Icons.my_library_books_rounded, NilaiScreen(username: username), false),
+                _navItem(context, "Data Guru & Anak", Icons.person, DataScreen(username: username), false),
+                _navItem(context, "Rekap Absensi", Icons.receipt_long, RekapScreen(username: username), true),
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
         ],
       ),
     );
@@ -228,6 +213,34 @@ class HomeScreen extends StatelessWidget {
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _navItem(BuildContext context, String title, IconData icon, Widget page, bool isActive) {
+    return GestureDetector(
+      onTap: () {
+        if (!isActive) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 26, color: isActive ? Colors.green : Colors.black54),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: isActive ? Colors.green : Colors.black54,
+            ),
           ),
         ],
       ),
