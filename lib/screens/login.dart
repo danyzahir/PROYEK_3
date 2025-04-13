@@ -166,12 +166,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  '© 2025 TKQ & SDIT Nahdlatut Tujjar',
-                  style: TextStyle(fontSize: 14, color: Colors.black54),
-                ),
               ],
+            ),
+          ),
+          const Spacer(),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Text(
+              '© 2025 TKQ & SDIT Nahdlatut Tujjar',
+              style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
           ),
         ],

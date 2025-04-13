@@ -12,13 +12,16 @@ class NilaiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           // Header Hijau
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 45),
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: screenHeight * 0.04),
             decoration: const BoxDecoration(
               color: Colors.green,
               borderRadius: BorderRadius.only(
@@ -39,19 +42,19 @@ class NilaiScreen extends StatelessWidget {
                       children: [
                         Text(
                           username,
-                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                          style: TextStyle(fontSize: screenWidth * 0.04, color: Colors.white),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: screenWidth * 0.02),
                         UserMenu(username: username),
                       ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
-                const Text(
+                SizedBox(height: screenHeight * 0.015),
+                Text(
                   "NILAI",
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: screenWidth * 0.06,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -60,13 +63,13 @@ class NilaiScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 15),
+          SizedBox(height: screenHeight * 0.02),
 
           // Pengumuman
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
             child: Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(screenWidth * 0.03),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -81,18 +84,18 @@ class NilaiScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.calendar_today, color: Colors.black54, size: 16),
-                  const SizedBox(width: 10),
+                  Icon(Icons.calendar_today, color: Colors.black54, size: screenWidth * 0.04),
+                  SizedBox(width: screenWidth * 0.025),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         "Rabu, 13 Oktober 2023",
-                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                        style: TextStyle(fontSize: screenWidth * 0.03, color: Colors.black54),
                       ),
                       Text(
                         "Pembagian Rapot",
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: screenWidth * 0.035, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -101,46 +104,42 @@ class NilaiScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.025),
 
           // Grid Menu
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+              child: Wrap(
+                spacing: screenWidth * 0.04,
+                runSpacing: screenHeight * 0.02,
+                alignment: WrapAlignment.center,
                 children: [
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 1.2,
-                      children: [
-                        _menuItem("Nilai SDIT", Icons.my_library_books_rounded),
-                        _menuItem("Nilai TKQ", Icons.my_library_books_rounded),
-                      ],
-                    ),
+                  SizedBox(
+                    width: (screenWidth - (screenWidth * 0.05 * 2 + screenWidth * 0.04)) / 2,
+                    height: screenHeight * 0.14,
+                    child: _menuItem("Nilai SDIT", Icons.my_library_books_rounded),
                   ),
-                  Transform.translate(
-                    offset: const Offset(0, -34),
-                    child: Center(
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: MediaQuery.of(context).size.width * 0.361,
-                        child: _menuItem("Rekap Nilai", Icons.my_library_books_rounded),
-                      ),
-                    ),
+                  SizedBox(
+                    width: (screenWidth - (screenWidth * 0.05 * 2 + screenWidth * 0.04)) / 2,
+                    height: screenHeight * 0.14,
+                    child: _menuItem("Nilai TKQ", Icons.my_library_books_rounded),
+                  ),
+                  SizedBox(
+                    width: screenWidth * 0.5,
+                    height: screenHeight * 0.14,
+                    child: _menuItem("Rekap Nilai", Icons.my_library_books_rounded),
                   ),
                 ],
               ),
             ),
           ),
 
-          const SizedBox(height: 15),
+          SizedBox(height: screenHeight * 0.015),
 
           // Bottom Navigation Bar
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
@@ -159,11 +158,11 @@ class NilaiScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _navItem(context, "Dashboard", Icons.home, HomeScreen(username: username), false),
-                _navItem(context, "Absensi", Icons.assignment_ind_rounded, AbsensiScreen(username: username), false),
-                _navItem(context, "Nilai", Icons.my_library_books_rounded, NilaiScreen(username: username), true),
-                _navItem(context, "Data Guru & Anak", Icons.person, DataScreen(username: username), false),
-                _navItem(context, "Rekap Absensi", Icons.receipt_long, RekapScreen(username: username), false),
+                _navItem(context, "Dashboard", Icons.home, HomeScreen(username: username), false, screenWidth),
+                _navItem(context, "Absensi", Icons.assignment_ind_rounded, AbsensiScreen(username: username), false, screenWidth),
+                _navItem(context, "Nilai", Icons.my_library_books_rounded, NilaiScreen(username: username), true, screenWidth),
+                _navItem(context, "Data Guru & Anak", Icons.person, DataScreen(username: username), false, screenWidth),
+                _navItem(context, "Rekap Absensi", Icons.receipt_long, RekapScreen(username: username), false, screenWidth),
               ],
             ),
           ),
@@ -201,7 +200,14 @@ class NilaiScreen extends StatelessWidget {
     );
   }
 
-  Widget _navItem(BuildContext context, String title, IconData icon, Widget page, bool isActive) {
+  Widget _navItem(
+    BuildContext context,
+    String title,
+    IconData icon,
+    Widget page,
+    bool isActive,
+    double screenWidth,
+  ) {
     return GestureDetector(
       onTap: () {
         if (!isActive) {
@@ -214,12 +220,13 @@ class NilaiScreen extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 26, color: isActive ? Colors.green : Colors.black54),
-          const SizedBox(height: 2),
+          Icon(icon, size: screenWidth * 0.06, color: isActive ? Colors.green : Colors.black54),
+          SizedBox(height: screenWidth * 0.01),
           Text(
             title,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: screenWidth * 0.025,
               fontWeight: FontWeight.w600,
               color: isActive ? Colors.green : Colors.black54,
             ),
