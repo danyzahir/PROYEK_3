@@ -10,6 +10,9 @@ class AdminDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: Column(
@@ -90,7 +93,7 @@ class AdminDashboard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 20), // Space between header and content
 
           // Info Agenda
           Padding(
@@ -131,65 +134,89 @@ class AdminDashboard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 20), // Space between agenda and grid menu
 
-          // Menu Grid
+          // Menu Grid (Diubah agar posisinya seperti di AbsensiScreen)
           Expanded(
-            child: GridView.count(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.2,
-              children: [
-                _menuItem("Akun Guru", Icons.group, () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AkunGuruScreen(username: username),
-                    ),
-                  );
-                }),
-                _menuItem("Edit Agenda", Icons.edit_calendar, () {}),
-                _menuItem("Data Siswa & Guru", Icons.person_pin, () {}),
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: screenWidth * 0.04,
+                    runSpacing: screenHeight * 0.02,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: (screenWidth -
+                                (screenWidth * 0.05 * 2 + screenWidth * 0.04)) /
+                            2,
+                        height: screenHeight * 0.14,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AkunGuruScreen(username: username),
+                              ),
+                            );
+                          },
+                          child: _menuItem("Akun Guru", Icons.group, screenWidth),
+                        ),
+                      ),
+                      SizedBox(
+                        width: (screenWidth -
+                                (screenWidth * 0.05 * 2 + screenWidth * 0.04)) /
+                            2,
+                        height: screenHeight * 0.14,
+                        child: _menuItem("Edit Agenda", Icons.edit_calendar, screenWidth),
+                      ),
+                      SizedBox(
+                        width: screenWidth * 0.5, // full lebar dikurangi padding
+                        height: screenHeight * 0.14,
+                        child: _menuItem("Data Siswa & Guru", Icons.person_pin, screenWidth),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-
-          const SizedBox(height: 70), // Spacer bawah
         ],
       ),
     );
   }
 
-  Widget _menuItem(String title, IconData icon, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              blurRadius: 4,
-              spreadRadius: 2,
-              offset: const Offset(0, 2),
+  Widget _menuItem(String title, IconData icon, double screenWidth) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 4,
+            spreadRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: screenWidth * 0.09, color: Colors.black),
+          SizedBox(height: screenWidth * 0.01),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: screenWidth * 0.03,
+              fontWeight: FontWeight.w600,
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 35, color: Colors.black),
-            const SizedBox(height: 5),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
