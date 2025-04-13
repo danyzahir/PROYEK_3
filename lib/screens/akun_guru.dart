@@ -104,7 +104,7 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                     final auth = FirebaseAuth.instance;
                     final user = await auth.signInWithEmailAndPassword(
                       email: currentEmail,
-                      password: 'defaultPassword', // hanya jika kamu simpan default password
+                      password: 'defaultPassword', 
                     );
                     await user.user!.updatePassword(passwordController.text.trim());
                     await auth.signOut();
