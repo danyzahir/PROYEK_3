@@ -71,6 +71,7 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
   void _showEditDialog(String docId, String currentEmail, String currentUsername) {
     final emailController = TextEditingController(text: currentEmail);
     final usernameController = TextEditingController(text: currentUsername);
+    final passwordController = TextEditingController();
 
     showDialog(
       context: context,
@@ -82,6 +83,11 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
             children: [
               TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Email')),
               TextField(controller: usernameController, decoration: const InputDecoration(labelText: 'Username')),
+              TextField(
+                controller: passwordController,
+                decoration: const InputDecoration(labelText: 'Password (baru jika ingin ubah)'),
+                obscureText: true,
+              ),
             ],
           ),
           actions: [
@@ -92,6 +98,21 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                   'email': emailController.text.trim(),
                   'username': usernameController.text.trim(),
                 });
+
+                if (passwordController.text.trim().isNotEmpty) {
+                  try {
+                    final auth = FirebaseAuth.instance;
+                    final user = await auth.signInWithEmailAndPassword(
+                      email: currentEmail,
+                      password: 'defaultPassword', // hanya jika kamu simpan default password
+                    );
+                    await user.user!.updatePassword(passwordController.text.trim());
+                    await auth.signOut();
+                  } catch (e) {
+                    debugPrint('Gagal ubah password: $e');
+                  }
+                }
+
                 Navigator.pop(context);
               },
               child: const Text("Update"),
@@ -122,15 +143,6 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
     );
   }
 
-  void _resetPassword(String email) async {
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Link reset dikirim ke email")));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gagal kirim reset: $e")));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,7 +153,7 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
             decoration: const BoxDecoration(
-              color: Colors.green,
+              color: Color(0xFF4CAF50),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -150,7 +162,6 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // Back
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
@@ -158,7 +169,6 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
-                // Title
                 const Align(
                   alignment: Alignment.center,
                   child: Text(
@@ -166,7 +176,6 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
-                // Logout
                 Align(
                   alignment: Alignment.centerRight,
                   child: Row(
@@ -256,25 +265,46 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                     final data = doc.data() as Map<String, dynamic>;
 
                     return Card(
+                      color: const Color(0xFF4CAF50), // Warna hijau yang serupa dengan header
                       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                       child: ListTile(
-                        title: Text(data['username'] ?? ''),
-                        subtitle: Text(data['email'] ?? ''),
+                        title: Text(data['username'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                        subtitle: Text(data['email'] ?? '', style: const TextStyle(color: Colors.white)),
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) {
                             if (value == 'edit') {
                               _showEditDialog(doc.id, data['email'], data['username']);
                             } else if (value == 'hapus') {
                               _confirmHapus(doc.id);
-                            } else if (value == 'reset') {
-                              _resetPassword(data['email']);
                             }
                           },
                           itemBuilder: (context) => [
-                            const PopupMenuItem(value: 'edit', child: Text("Edit")),
-                            const PopupMenuItem(value: 'reset', child: Text("Reset Password")),
-                            const PopupMenuItem(value: 'hapus', child: Text("Hapus")),
+                            PopupMenuItem<String>(
+                              value: 'edit',
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.edit, color: Color.fromARGB(255, 0, 0, 0)),
+                                  SizedBox(width: 10),
+                                  Text('Edit', style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'hapus',
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.remove, color: Color.fromARGB(255, 0, 0, 0)),
+                                  SizedBox(width: 10),
+                                  Text('Hapus', style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+                                ],
+                              ),
+                            ),
                           ],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: Colors.white,
+                          elevation: 2,
                         ),
                       ),
                     );
