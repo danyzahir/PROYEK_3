@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
-import 'akun_guru.dart'; // <- Pastikan file ini ada
+import 'akun_guru.dart'; 
 
 class AdminDashboard extends StatelessWidget {
   final String username;
@@ -29,7 +29,7 @@ class AdminDashboard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                // Logo dan User Menu
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -93,8 +93,7 @@ class AdminDashboard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20), // Space between header and content
-
+          const SizedBox(height: 20), 
           // Info Agenda
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -134,9 +133,7 @@ class AdminDashboard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20), // Space between agenda and grid menu
-
-          // Menu Grid (Diubah agar posisinya seperti di AbsensiScreen)
+          const SizedBox(height: 20), 
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
