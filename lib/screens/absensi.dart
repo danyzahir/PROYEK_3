@@ -5,6 +5,7 @@ import 'nilai.dart';
 import 'data_guru_anak.dart';
 import 'rekap_absensi.dart';
 import '../widgets/user_menu.dart';
+import 'absensi_sdit.dart';
 
 class AbsensiScreen extends StatelessWidget {
   final String username;
@@ -153,7 +154,15 @@ class AbsensiScreen extends StatelessWidget {
                       Icons.people_alt,
                       screenWidth,
                       screenHeight,
-                      () {},
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AbsensiSDIT(username: username),
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(
                       width: screenWidth * 0.399,
