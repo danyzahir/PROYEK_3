@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
 import 'akun_guru.dart'; 
+import 'edit_agenda.dart';
 
 class AdminDashboard extends StatelessWidget {
   final String username;
@@ -168,7 +169,18 @@ class AdminDashboard extends StatelessWidget {
                                 (screenWidth * 0.05 * 2 + screenWidth * 0.04)) /
                             2,
                         height: screenHeight * 0.14,
+                        child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditAgendaScreen(username: username),
+                            ),
+                          );
+                        },
                         child: _menuItem("Edit Agenda", Icons.edit_calendar, screenWidth),
+                      ),
+
                       ),
                       SizedBox(
                         width: screenWidth * 0.5, // full lebar dikurangi padding

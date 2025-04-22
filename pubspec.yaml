@@ -18,6 +18,9 @@ dependencies:
   firebase_auth: ^4.17.0
   cloud_firestore: ^4.15.0
   image_picker: ^0.8.5+3 
+  intl: ^0.19.0
+  flutter_localizations:
+    sdk: flutter  # <--- dipindah ke sini
 
 dev_dependencies:
   flutter_test:
