@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
           case '/admin':
             return MaterialPageRoute(
               builder: (context) => AdminDashboard(username: args as String),
-            );
+            );  
           case '/absensi':
             return MaterialPageRoute(
               builder: (context) => AbsensiScreen(username: args as String),

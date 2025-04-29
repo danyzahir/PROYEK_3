@@ -5,6 +5,8 @@ import 'home_screen.dart';
 import 'nilai.dart';
 import 'data_guru_anak.dart';
 import 'login.dart';
+import 'rekap_guru_sdit.dart';
+import 'rekap_guru_tkq.dart';
 
 class RekapScreen extends StatelessWidget {
   final String username;
@@ -41,8 +43,7 @@ class RekapScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon:
-                              const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
                           onPressed: () => Navigator.pop(context),
                         ),
                         Row(
@@ -164,14 +165,56 @@ class RekapScreen extends StatelessWidget {
                   runSpacing: screenHeight * 0.02,
                   alignment: WrapAlignment.center,
                   children: [
-                    _menuBox("Rekap Absensi\nGuru SDIT", Icons.people,
-                        screenWidth, screenHeight),
-                    _menuBox("Rekap Absensi\nGuru TKQ", Icons.people,
-                        screenWidth, screenHeight),
-                    _menuBox("Rekap Absensi\nAnak SDIT", Icons.people,
-                        screenWidth, screenHeight),
-                    _menuBox("Rekap Absensi\nAnak TKQ", Icons.people,
-                        screenWidth, screenHeight),
+                    _menuBox(
+                      context,
+                      "Rekap Absensi Guru SDIT",
+                      Icons.people_alt,
+                      screenWidth,
+                      screenHeight,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RekapguruScreen(username: username),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuBox(
+                       context,
+                      "Rekap Absensi Guru TKQ",
+                      Icons.people_alt,
+                      screenWidth,
+                      screenHeight,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RekapgurutkqScreen(username: username),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuBox(
+                      context,
+                      "Rekap Absensi\nAnak SDIT",
+                      Icons.people,
+                      screenWidth,
+                      screenHeight,
+                      () {
+                        // TODO: Implementasi halaman Rekap Absensi Anak SDIT
+                      },
+                    ),
+                    _menuBox(
+                      context,
+                      "Rekap Absensi\nAnak TKQ",
+                      Icons.people,
+                      screenWidth,
+                      screenHeight,
+                      () {
+                        // TODO: Implementasi halaman Rekap Absensi Anak TKQ
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -220,37 +263,46 @@ class RekapScreen extends StatelessWidget {
   }
 
   Widget _menuBox(
-      String title, IconData icon, double screenWidth, double screenHeight) {
-    return SizedBox(
-      width: (screenWidth - (screenWidth * 0.08 * 2 + screenWidth * 0.04)) / 2,
-      height: screenHeight * 0.16,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              blurRadius: 4,
-              spreadRadius: 2,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: screenWidth * 0.09, color: Colors.black),
-            SizedBox(height: screenWidth * 0.01),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: screenWidth * 0.03,
-                fontWeight: FontWeight.w600,
+    BuildContext context,
+    String title,
+    IconData icon,
+    double screenWidth,
+    double screenHeight,
+    VoidCallback? onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: (screenWidth - (screenWidth * 0.08 * 2 + screenWidth * 0.04)) / 2,
+        height: screenHeight * 0.16,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                blurRadius: 4,
+                spreadRadius: 2,
+                offset: const Offset(0, 2),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: screenWidth * 0.09, color: Colors.black),
+              SizedBox(height: screenWidth * 0.01),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.03,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
