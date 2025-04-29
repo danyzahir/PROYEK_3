@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
-import 'akun_guru.dart'; 
+import 'akun_guru.dart';
+import 'data_guru_anak_admin.dart';
 
 class AdminDashboard extends StatelessWidget {
   final String username;
@@ -29,7 +30,6 @@ class AdminDashboard extends StatelessWidget {
             ),
             child: Column(
               children: [
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -41,7 +41,8 @@ class AdminDashboard extends StatelessWidget {
                       children: [
                         Text(
                           username,
-                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.white),
                         ),
                         const SizedBox(width: 10),
                         PopupMenuButton<String>(
@@ -50,7 +51,8 @@ class AdminDashboard extends StatelessWidget {
                               await FirebaseAuth.instance.signOut();
                               Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()),
                                 (route) => false,
                               );
                             }
@@ -73,7 +75,8 @@ class AdminDashboard extends StatelessWidget {
                           child: CircleAvatar(
                             backgroundColor: Colors.grey[300],
                             radius: 18,
-                            child: const Icon(Icons.person, color: Colors.black),
+                            child:
+                                const Icon(Icons.person, color: Colors.black),
                           ),
                         ),
                       ],
@@ -93,7 +96,7 @@ class AdminDashboard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20), 
+          const SizedBox(height: 20),
           // Info Agenda
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -124,7 +127,8 @@ class AdminDashboard extends StatelessWidget {
                       ),
                       Text(
                         "Pembagian Rapot",
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -133,7 +137,7 @@ class AdminDashboard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20), 
+          const SizedBox(height: 20),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
@@ -160,7 +164,8 @@ class AdminDashboard extends StatelessWidget {
                               ),
                             );
                           },
-                          child: _menuItem("Akun Guru", Icons.group, screenWidth),
+                          child:
+                              _menuItem("Akun Guru", Icons.group, screenWidth),
                         ),
                       ),
                       SizedBox(
@@ -168,12 +173,27 @@ class AdminDashboard extends StatelessWidget {
                                 (screenWidth * 0.05 * 2 + screenWidth * 0.04)) /
                             2,
                         height: screenHeight * 0.14,
-                        child: _menuItem("Edit Agenda", Icons.edit_calendar, screenWidth),
+                        child: _menuItem(
+                            "Edit Agenda", Icons.edit_calendar, screenWidth),
                       ),
                       SizedBox(
-                        width: screenWidth * 0.5, // full lebar dikurangi padding
+                        width: (screenWidth -
+                                (screenWidth * 0.05 * 2 + screenWidth * 0.04)) /
+                            2,
                         height: screenHeight * 0.14,
-                        child: _menuItem("Data Siswa & Guru", Icons.person_pin, screenWidth),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DataScreenAdmin(username: username),
+                              ),
+                            );
+                          },
+                          child: _menuItem(
+                              "Data Guru & Anak", Icons.group, screenWidth),
+                        ),
                       ),
                     ],
                   ),
