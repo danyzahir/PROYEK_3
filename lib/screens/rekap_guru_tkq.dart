@@ -184,7 +184,7 @@ class RekapgurutkqScreen extends StatelessWidget {
                             const SizedBox(width: 10),
                             const Expanded(
                               child: Text(
-                                "Ratna, S.Pdi",
+                                "Ratna, S.Pd",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
