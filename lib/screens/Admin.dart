@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:proyek3/screens/data_guru_anak_admin.dart';
 import 'login.dart';
 import 'akun_guru.dart';
 import 'edit_agenda.dart';
@@ -188,11 +189,23 @@ class AdminDashboard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        width:
-                            screenWidth * 0.5, // full lebar dikurangi padding
+                        width: (screenWidth -
+                                (screenWidth * 0.05 * 2 + screenWidth * 0.04)) /
+                            2,
                         height: screenHeight * 0.14,
-                        child: _menuItem(
-                            "Data Siswa & Guru", Icons.person_pin, screenWidth),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DataScreenAdmin(username: username),
+                              ),
+                            );
+                          },
+                          child: _menuItem(
+                              "Edit Agenda", Icons.edit_calendar, screenWidth),
+                        ),
                       ),
                     ],
                   ),

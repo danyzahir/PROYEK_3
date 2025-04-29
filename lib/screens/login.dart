@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_screen.dart';
 import 'Admin.dart'; // import halaman admin
-import 'akun_guru.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -141,9 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: _obscureText,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureText
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: _togglePasswordVisibility,
                   ),

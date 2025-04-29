@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/login.dart';
 import 'screens/home_screen.dart';
 import 'screens/absensi.dart';
@@ -28,10 +29,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
+      // Tambahan agar DatePicker bisa jalan dan pakai lokal Indonesia
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('id', 'ID'), // Bahasa Indonesia
+        Locale('en', 'US'), // English
+      ],
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginScreen(),
-        // Jangan taruh AbsensiScreen di sini karena butuh parameter username
+        // Jangan taruh AbsensiScreen di sini karena butuh parameter
       },
       onGenerateRoute: (settings) {
         final args = settings.arguments;

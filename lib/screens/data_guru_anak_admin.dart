@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'absensi.dart';
-import 'home_screen.dart';
-import 'nilai.dart';
-import 'rekap_absensi.dart';
 import '../widgets/user_menu.dart';
-import 'data_guru_sdit.dart';
-import 'data_guru_tkq.dart';
-import 'data_anak_sdit.dart';
-import 'data_anak_tkq.dart';
+import 'data_guru_sdit_admin.dart';
+import 'data_anak_sdit_admin.dart';
 
-class DataScreen extends StatelessWidget {
+class DataScreenAdmin extends StatelessWidget {
   final String username;
 
-  const DataScreen({super.key, required this.username});
+  const DataScreenAdmin({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -139,45 +133,27 @@ class DataScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DataGuruSDIT(
+                          builder: (context) => DataGuruSDITAdmin(
                             username: username,
                           ),
                         ),
                       );
                     }),
                     _menuCard(context, "Data Guru TKQ", Icons.people,
-                        screenWidth, screenHeight, () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DataGuruTKQ(
-                            username: username,
-                          ),
-                        ),
-                      );
-                    }),
+                        screenWidth, screenHeight, () {}),
                     _menuCard(context, "Data Murid SDIT", Icons.people,
                         screenWidth, screenHeight, () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DataAnakSDIT(
+                          builder: (context) => DataAnakSDITAdmin(
                             username: username,
                           ),
                         ),
                       );
                     }),
                     _menuCard(context, "Data Murid TKQ", Icons.people,
-                        screenWidth, screenHeight, () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DataAnakTKQ(
-                            username: username,
-                          ),
-                        ),
-                      );
-                    }),
+                        screenWidth, screenHeight, () {}),
                   ],
                 ),
               ),
@@ -185,41 +161,6 @@ class DataScreen extends StatelessWidget {
               SizedBox(height: screenHeight * 0.02),
             ],
           ),
-        ),
-      ),
-
-      // Bottom Navigation
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 5,
-              spreadRadius: 2,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _navItem(context, "Dashboard", Icons.home,
-                HomeScreen(username: username), false, screenWidth),
-            _navItem(context, "Absensi", Icons.assignment_ind_rounded,
-                AbsensiScreen(username: username), false, screenWidth),
-            _navItem(context, "Nilai", Icons.my_library_books_rounded,
-                NilaiScreen(username: username), false, screenWidth),
-            _navItem(context, "Data Guru & Anak", Icons.person,
-                DataScreen(username: username), true, screenWidth),
-            _navItem(context, "Rekap Absensi", Icons.receipt_long,
-                RekapScreen(username: username), false, screenWidth),
-          ],
         ),
       ),
     );
@@ -262,46 +203,6 @@ class DataScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: screenWidth * 0.03,
               fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _navItem(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Widget page,
-    bool isActive,
-    double screenWidth,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        if (!isActive) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => page),
-          );
-        }
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: screenWidth * 0.06,
-            color: isActive ? Colors.green : Colors.black54,
-          ),
-          SizedBox(height: screenWidth * 0.01),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: screenWidth * 0.025,
-              fontWeight: FontWeight.w600,
-              color: isActive ? Colors.green : Colors.black54,
             ),
           ),
         ],
