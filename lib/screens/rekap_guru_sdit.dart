@@ -14,7 +14,7 @@ class RekapguruScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.blueGrey[100],
       body: SingleChildScrollView(
         child: Column(
           children: [
