@@ -16,16 +16,19 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
   DateTime? selectedDate;
 
   void _tambahAtauEditKegiatan({int? indexToEdit}) {
-    String namaKegiatan = indexToEdit != null ? kegiatanList[indexToEdit]['nama']! : '';
+    String namaKegiatan =
+        indexToEdit != null ? kegiatanList[indexToEdit]['nama']! : '';
     selectedDate = indexToEdit != null
-        ? DateFormat('EEEE, dd MMMM yyyy', 'id_ID').parse(kegiatanList[indexToEdit]['tanggal']!)
+        ? DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
+            .parse(kegiatanList[indexToEdit]['tanggal']!)
         : DateTime.now();
 
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setStateDialog) => AlertDialog(
-          title: Text(indexToEdit != null ? 'Edit Kegiatan' : 'Tambah Kegiatan'),
+          title:
+              Text(indexToEdit != null ? 'Edit Kegiatan' : 'Tambah Kegiatan'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -41,7 +44,8 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                   const SizedBox(width: 10),
                   Text(
                     selectedDate != null
-                        ? DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(selectedDate!)
+                        ? DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
+                            .format(selectedDate!)
                         : 'Pilih Tanggal',
                     style: const TextStyle(fontSize: 14),
                   ),
@@ -66,13 +70,16 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Batal')),
             ElevatedButton(
               onPressed: () {
                 if (namaKegiatan.trim().isNotEmpty && selectedDate != null) {
                   final newKegiatan = {
                     'nama': namaKegiatan.trim(),
-                    'tanggal': DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(selectedDate!),
+                    'tanggal': DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
+                        .format(selectedDate!),
                   };
                   setState(() {
                     if (indexToEdit != null) {
@@ -104,7 +111,7 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.blueGrey[100],
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -128,7 +135,8 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon:
+                              const Icon(Icons.arrow_back, color: Colors.white),
                           onPressed: () => Navigator.pop(context),
                         ),
                         Row(
@@ -169,10 +177,12 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () => _tambahAtauEditKegiatan(),
                     icon: const Icon(Icons.add, color: Colors.black),
-                    label: const Text("Tambah", style: TextStyle(color: Colors.black)),
+                    label: const Text("Tambah",
+                        style: TextStyle(color: Colors.black)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -189,7 +199,8 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                 final item = entry.value;
 
                 return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 5),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05, vertical: 5),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.green[700],
@@ -203,15 +214,19 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                       ],
                     ),
                     child: ListTile(
-                      leading: const Icon(Icons.event_note, color: Colors.white),
-                      title: Text(item['nama'] ?? '', style: const TextStyle(color: Colors.white)),
-                      subtitle: Text(item['tanggal'] ?? '', style: const TextStyle(color: Colors.white70)),
+                      leading:
+                          const Icon(Icons.event_note, color: Colors.white),
+                      title: Text(item['nama'] ?? '',
+                          style: const TextStyle(color: Colors.white)),
+                      subtitle: Text(item['tanggal'] ?? '',
+                          style: const TextStyle(color: Colors.white70)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit, color: Colors.white),
-                            onPressed: () => _tambahAtauEditKegiatan(indexToEdit: index),
+                            onPressed: () =>
+                                _tambahAtauEditKegiatan(indexToEdit: index),
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.white),

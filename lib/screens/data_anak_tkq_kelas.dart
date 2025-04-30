@@ -28,7 +28,7 @@ class _DataAnakTKQKelasState extends State<DataAnakTKQKelas> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.blueGrey[100],
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(

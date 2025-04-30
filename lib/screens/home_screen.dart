@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.blueGrey[100],
       body: Column(
         children: [
           // Header
