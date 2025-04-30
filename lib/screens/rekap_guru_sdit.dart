@@ -126,7 +126,7 @@ class RekapguruScreen extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              Container(
+                              SizedBox(
                                 width: 40,
                                 child: const Center(
                                   child: Text(
@@ -162,39 +162,39 @@ class RekapguruScreen extends StatelessWidget {
                   const SizedBox(height: 10),
 
                   // Data Guru
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              child: const Text(
-                                "1.",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    child: ExpansionTile(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      tilePadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      childrenPadding: const EdgeInsets.only(
+                          left: 20, right: 12, bottom: 12),
+                      title: Row(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            child: const Text(
+                              "1.",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
                             ),
-                            const SizedBox(width: 10),
-                            const Expanded(
-                              child: Text(
-                                "Gin",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Text(
+                              "Gin",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
                             ),
-                          ],
-                        ),
-                        const Divider(
-                            color: Colors.grey, thickness: 1, height: 20),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          ),
+                        ],
+                      ),
+                      children: const [
+                        Align(
+                          alignment: Alignment.centerLeft,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
