@@ -77,7 +77,8 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
     );
   }
 
-  void _showEditDialog(String docId, String currentEmail, String currentUsername) {
+  void _showEditDialog(
+      String docId, String currentEmail, String currentUsername) {
     final emailController = TextEditingController(text: currentEmail);
     final usernameController = TextEditingController(text: currentUsername);
 
@@ -105,7 +106,9 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                       email: emailController.text.trim(),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Email reset dikirim ke ${emailController.text.trim()}')),
+                      SnackBar(
+                          content: Text(
+                              'Email reset dikirim ke ${emailController.text.trim()}')),
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -117,8 +120,7 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                 label: const Text("Kirim Reset Password"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4CAF50),
-      ),
-
+                ),
               ),
             ],
           ),
@@ -175,7 +177,7 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.blueGrey[100],
       body: Column(
         children: [
           Container(
@@ -311,8 +313,8 @@ class _AkunGuruScreenState extends State<AkunGuruScreen> {
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) {
                             if (value == 'edit') {
-                              _showEditDialog(doc.id, data['email'],
-                                  data['username']);
+                              _showEditDialog(
+                                  doc.id, data['email'], data['username']);
                             } else if (value == 'hapus') {
                               _confirmHapus(doc.id);
                             }

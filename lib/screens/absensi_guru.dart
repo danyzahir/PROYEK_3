@@ -45,7 +45,7 @@ class _AbsensiGuruPageState extends State<AbsensiGuruPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.blueGrey[100],
       body: Column(
         children: [
           // Header Hijau
@@ -73,7 +73,8 @@ class _AbsensiGuruPageState extends State<AbsensiGuruPage> {
                       children: [
                         Text(
                           widget.username,
-                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.white),
                         ),
                         const SizedBox(width: 10),
                         CircleAvatar(
@@ -175,7 +176,8 @@ class _AbsensiGuruPageState extends State<AbsensiGuruPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomeScreen(username: widget.username),
+                        builder: (context) =>
+                            HomeScreen(username: widget.username),
                       ),
                     );
                   },
@@ -186,44 +188,52 @@ class _AbsensiGuruPageState extends State<AbsensiGuruPage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AbsensiScreen(username: widget.username),
+                        builder: (context) =>
+                            AbsensiScreen(username: widget.username),
                       ),
                     );
                   },
-                  child: _bottomNavItem("Absensi", Icons.assignment_ind_rounded, true),
+                  child: _bottomNavItem(
+                      "Absensi", Icons.assignment_ind_rounded, true),
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NilaiScreen(username: widget.username),
+                        builder: (context) =>
+                            NilaiScreen(username: widget.username),
                       ),
                     );
                   },
-                  child: _bottomNavItem("Nilai", Icons.my_library_books_rounded, false),
+                  child: _bottomNavItem(
+                      "Nilai", Icons.my_library_books_rounded, false),
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DataScreen(username: widget.username),
+                        builder: (context) =>
+                            DataScreen(username: widget.username),
                       ),
                     );
                   },
-                  child: _bottomNavItem("Data Guru & Anak", Icons.person, false),
+                  child:
+                      _bottomNavItem("Data Guru & Anak", Icons.person, false),
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RekapScreen(username: widget.username),
+                        builder: (context) =>
+                            RekapScreen(username: widget.username),
                       ),
                     );
                   },
-                  child: _bottomNavItem("Rekap Absensi", Icons.receipt_long, false),
+                  child: _bottomNavItem(
+                      "Rekap Absensi", Icons.receipt_long, false),
                 ),
               ],
             ),
