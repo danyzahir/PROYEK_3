@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/user_menu.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import '../widgets/user_menu.dart';
 
 class EditAgendaScreen extends StatefulWidget {
   final String username;
@@ -19,8 +20,7 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
     String namaKegiatan =
         indexToEdit != null ? kegiatanList[indexToEdit]['nama']! : '';
     selectedDate = indexToEdit != null
-        ? DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
-            .parse(kegiatanList[indexToEdit]['tanggal']!)
+        ? DateFormat('yyyy-MM-dd').parse(kegiatanList[indexToEdit]['tanggal']!)
         : DateTime.now();
 
     showDialog(
@@ -71,24 +71,46 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Batal')),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (namaKegiatan.trim().isNotEmpty && selectedDate != null) {
                   final newKegiatan = {
                     'nama': namaKegiatan.trim(),
-                    'tanggal': DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
-                        .format(selectedDate!),
+                    'tanggal': DateFormat('yyyy-MM-dd').format(selectedDate!),
+                    'username': widget.username,
+                    'timestamp': FieldValue.serverTimestamp(),
                   };
+
                   setState(() {
                     if (indexToEdit != null) {
-                      kegiatanList[indexToEdit] = newKegiatan;
+                      kegiatanList[indexToEdit] = {
+                        'nama': namaKegiatan.trim(),
+                        'tanggal': DateFormat('yyyy-MM-dd')
+                            .format(selectedDate!),
+                      };
                     } else {
-                      kegiatanList.add(newKegiatan);
+                      kegiatanList.add({
+                        'nama': namaKegiatan.trim(),
+                        'tanggal': DateFormat('yyyy-MM-dd')
+                            .format(selectedDate!),
+                      });
                     }
                   });
-                  Navigator.pop(context);
+
+                  try {
+                    await FirebaseFirestore.instance
+                        .collection('agenda')
+                        .add(newKegiatan);
+                    Navigator.pop(context);
+                  } catch (e) {
+                    print("Gagal simpan ke Firestore: $e");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Gagal menyimpan ke database')),
+                    );
+                  }
                 }
               },
               child: const Text('Simpan'),
@@ -218,7 +240,10 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                           const Icon(Icons.event_note, color: Colors.white),
                       title: Text(item['nama'] ?? '',
                           style: const TextStyle(color: Colors.white)),
-                      subtitle: Text(item['tanggal'] ?? '',
+                      subtitle: Text(
+                          DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(
+                              DateFormat('yyyy-MM-dd')
+                                  .parse(item['tanggal'] ?? '')),
                           style: const TextStyle(color: Colors.white70)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
