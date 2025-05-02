@@ -22,7 +22,7 @@ class _DataAnakSDITAdminState extends State<DataAnakSDITAdmin> {
     if (isEdit) {
       FirebaseFirestore.instance.collection('anak_sdit').doc(docId).get().then((doc) {
         namaController.text = doc['nama'];
-        jabatanController.text = doc['asal'];
+        jabatanController.text = doc['kelas'];
         _showForm(docId: docId);
       });
     } else {
@@ -55,7 +55,7 @@ class _DataAnakSDITAdminState extends State<DataAnakSDITAdmin> {
                 ),
                 TextField(
                   controller: jabatanController,
-                  decoration: const InputDecoration(labelText: 'Asal'),
+                  decoration: const InputDecoration(labelText: 'kelas'),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -73,7 +73,7 @@ class _DataAnakSDITAdminState extends State<DataAnakSDITAdmin> {
                       onPressed: () async {
                         final data = {
                           'nama': namaController.text.trim(),
-                          'asal': jabatanController.text.trim(),
+                          'kelas': jabatanController.text.trim(),
                           'oleh': widget.username,
                           'timestamp': FieldValue.serverTimestamp(),
                         };
@@ -197,8 +197,8 @@ class _DataAnakSDITAdminState extends State<DataAnakSDITAdmin> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(
                         children: [
-                          _buildHeaderCell('Nama Anak', screenWidth, flex: 4),
-                          _buildHeaderCell('Asal', screenWidth, flex: 4),
+                          _buildHeaderCell('Nama ', screenWidth, flex: 4),
+                          _buildHeaderCell('Kelas', screenWidth, flex: 4),
                           IconButton(
                             icon: const Icon(Icons.add, color: Colors.white),
                             onPressed: () => _tambahAtauEditAnak(),
@@ -249,7 +249,7 @@ class _DataAnakSDITAdminState extends State<DataAnakSDITAdmin> {
                                     flex: 4,
                                     child: Padding(
                                       padding: const EdgeInsets.all(12.0),
-                                      child: Text(data['asal'] ?? '-'),
+                                      child: Text(data['kelas'] ?? '-'),
                                     ),
                                   ),
                                   IconButton(
