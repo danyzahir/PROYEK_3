@@ -5,6 +5,8 @@ import 'data_guru_anak.dart';
 import 'rekap_absensi.dart';
 import '../../widgets/user_menu.dart';
 import 'nilai_sdit.dart';
+import 'rekap_nilai_sdit.dart';
+import 'rekap_nilai_tkq.dart';
 
 class NilaiScreen extends StatelessWidget {
   final String username;
@@ -154,14 +156,37 @@ class NilaiScreen extends StatelessWidget {
                       screenHeight,
                       () {}, // TODO: ganti aksi jika ada
                     ),
-                    SizedBox(
-                      width: screenWidth * 0.399,
-                      height: screenHeight * 0.161,
-                      child: _menuItem(
-                        "Rekap Nilai",
-                        Icons.my_library_books_rounded,
-                        screenWidth,
-                      ),
+                    _menuCard(
+                      context,
+                      "Rekap Nilai SDIT",
+                      Icons.people_alt,
+                      screenWidth,
+                      screenHeight,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                RekapNilaiSdit(username: username),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuCard(
+                      context,
+                      "Rekap Nilai TKQ",
+                      Icons.people_alt,
+                      screenWidth,
+                      screenHeight,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                RekapNilaiTkq(username: username),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
