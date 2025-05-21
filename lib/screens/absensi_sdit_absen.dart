@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'absensi.dart';
 import 'home_screen.dart';
 import 'nilai.dart';
@@ -17,8 +19,63 @@ class AbsensiSDITAbsen extends StatefulWidget {
 }
 
 class _AbsensiSDITAbsenState extends State<AbsensiSDITAbsen> {
-  final List<String> siswa = ['Abdul', 'Adnan', 'Bule', 'Candi', 'Dafa'];
+  List<String> siswa = [];
+  bool isLoading = true;
   final Map<int, String> pilihanAbsensi = {};
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSiswaKelas1();
+  }
+
+  Future<void> fetchSiswaKelas1() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('anak_sdit')
+          .where('kelas', isEqualTo: '1')
+          .get();
+
+      final List<String> namaSiswa =
+          snapshot.docs.map((doc) => doc['nama'] as String).toList();
+
+      setState(() {
+        siswa = namaSiswa;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching siswa: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+Future<void> simpanAbsensiKeFirebase() async {
+  try {
+    final tanggalSekarang = DateTime.now();
+
+    for (int i = 0; i < siswa.length; i++) {
+      if (pilihanAbsensi.containsKey(i)) {
+        await FirebaseFirestore.instance.collection('sdit_absen').add({
+          'nama': siswa[i],
+          'absen': pilihanAbsensi[i],
+          'tanggal': tanggalSekarang,
+          'kelas': '1', // ✅ Menambahkan kelas
+        });
+      }
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Absensi berhasil disimpan")),
+    );
+  } catch (e) {
+    print("Gagal menyimpan absensi: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Gagal menyimpan absensi")),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -31,118 +88,24 @@ class _AbsensiSDITAbsenState extends State<AbsensiSDITAbsen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.05,
-                  vertical: screenHeight * 0.05,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon:
-                              const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              widget.username,
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.04,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(width: screenWidth * 0.02),
-                            PopupMenuButton<String>(
-                              onSelected: (value) async {
-                                if (value == 'logout') {
-                                  await FirebaseAuth.instance.signOut();
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }
-                              },
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 'logout',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.logout, color: Colors.red),
-                                      SizedBox(width: 10),
-                                      Text('Logout'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              child: const CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 18,
-                                child: Icon(Icons.person, color: Colors.black),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: screenHeight * 0.015),
-                    Text(
-                      "Kelas 1",
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.06,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildHeader(screenWidth, screenHeight),
               SizedBox(height: screenHeight * 0.02),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                        children: [
+                          _buildTableHeader(screenWidth),
+                          for (int i = 0; i < siswa.length; i++)
+                            _buildRow(i, siswa[i], screenWidth),
+                        ],
                       ),
-                      child: Container(
-                        color: Colors.green[700],
-                        child: Row(
-                          children: [
-                            _buildHeaderCell('No', screenWidth, flex: 1),
-                            _buildHeaderCell('NamaAnak', screenWidth, flex: 3),
-                            _buildHeaderCell('Pilihan', screenWidth, flex: 4),
-                          ],
-                        ),
-                      ),
-                    ),
-                    for (int i = 0; i < siswa.length; i++)
-                      _buildRow(i, siswa[i], screenWidth),
-                  ],
-                ),
               ),
               SizedBox(height: screenHeight * 0.02),
               ElevatedButton(
-                onPressed: () {
-                  print('Pilihan absensi: $pilihanAbsensi');
+                onPressed: () async {
+                  await simpanAbsensiKeFirebase();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -161,36 +124,107 @@ class _AbsensiSDITAbsenState extends State<AbsensiSDITAbsen> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 5,
-              spreadRadius: 2,
-              offset: Offset(0, -2),
-            ),
-          ],
+      bottomNavigationBar: _buildBottomNav(screenHeight, screenWidth),
+    );
+  }
+
+  Widget _buildHeader(double screenWidth, double screenHeight) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.05,
+        vertical: screenHeight * 0.05,
+      ),
+      decoration: const BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
         ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              Row(
+                children: [
+                  Text(
+                    widget.username,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: screenWidth * 0.02),
+                  PopupMenuButton<String>(
+                    onSelected: (value) async {
+                      if (value == 'logout') {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'logout',
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, color: Colors.red),
+                            SizedBox(width: 10),
+                            Text('Logout'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 18,
+                      child: Icon(Icons.person, color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: screenHeight * 0.015),
+          Text(
+            "Kelas 1",
+            style: TextStyle(
+              fontSize: screenWidth * 0.06,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTableHeader(double screenWidth) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+      child: Container(
+        color: Colors.green[700],
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _navItem(context, "Dashboard", Icons.home,
-                HomeScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Absensi", Icons.assignment_ind_rounded,
-                AbsensiScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Nilai", Icons.my_library_books_rounded,
-                NilaiScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Data Guru & Anak", Icons.person,
-                DataScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Rekap Absensi", Icons.receipt_long,
-                RekapScreen(username: widget.username), true, screenWidth),
+            _buildHeaderCell('No', screenWidth, flex: 1),
+            _buildHeaderCell('NamaAnak', screenWidth, flex: 3),
+            _buildHeaderCell('Pilihan', screenWidth, flex: 4),
           ],
         ),
       ),
@@ -270,6 +304,42 @@ class _AbsensiSDITAbsenState extends State<AbsensiSDITAbsen> {
                   .toList(),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav(double screenHeight, double screenWidth) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 5,
+            spreadRadius: 2,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _navItem(context, "Dashboard", Icons.home,
+              HomeScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Absensi", Icons.assignment_ind_rounded,
+              AbsensiScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Nilai", Icons.my_library_books_rounded,
+              NilaiScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Data Guru & Anak", Icons.person,
+              DataScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Rekap Absensi", Icons.receipt_long,
+              RekapScreen(username: widget.username), true, screenWidth),
         ],
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'home_screen.dart';
 import 'absensi.dart';
 import 'nilai.dart';
@@ -17,10 +19,39 @@ class DataGuruSDIT extends StatefulWidget {
 }
 
 class _DataGuruSDITState extends State<DataGuruSDIT> {
-  final List<Map<String, String>> guru = [
-    {'nama': 'Ade', 'jabatan': 'Kepala SDIT'},
-    {'nama': 'Apong', 'jabatan': 'Guru'},
-  ];
+  List<Map<String, String>> guru = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGuru();
+  }
+
+  Future<void> fetchGuru() async {
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('guru_sdit').get();
+
+      final List<Map<String, String>> loadedGuru = snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return {
+          'nama': data['nama']?.toString() ?? '',
+          'jabatan': data['jabatan']?.toString() ?? '',
+        };
+      }).toList();
+
+      setState(() {
+        guru = loadedGuru;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Gagal mengambil data guru: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,150 +64,131 @@ class _DataGuruSDITState extends State<DataGuruSDIT> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.05,
-                  vertical: screenHeight * 0.05,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon:
-                              const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              widget.username,
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.04,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(width: screenWidth * 0.02),
-                            PopupMenuButton<String>(
-                              onSelected: (value) async {
-                                if (value == 'logout') {
-                                  await FirebaseAuth.instance.signOut();
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }
-                              },
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 'logout',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.logout, color: Colors.red),
-                                      SizedBox(width: 10),
-                                      Text('Logout'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              child: const CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 18,
-                                child: Icon(Icons.person, color: Colors.black),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: screenHeight * 0.015),
-                    Text(
-                      "Data Guru - SDIT",
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.06,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildHeader(screenWidth, screenHeight),
               SizedBox(height: screenHeight * 0.02),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
+                child: isLoading
+                    ? const CircularProgressIndicator()
+                    : Column(
+                        children: [
+                          _buildTableHeader(screenWidth),
+                          for (int i = 0; i < guru.length; i++)
+                            _buildStaticRow(
+                              i,
+                              guru[i]['nama']!,
+                              guru[i]['jabatan']!,
+                              screenWidth,
+                            ),
+                        ],
                       ),
-                      child: Container(
-                        color: Colors.green[700],
-                        child: Row(
-                          children: [
-                            _buildHeaderCell('No', screenWidth, flex: 1),
-                            _buildHeaderCell('Nama', screenWidth, flex: 3),
-                            _buildHeaderCell('Jabatan', screenWidth, flex: 4),
-                          ],
-                        ),
-                      ),
-                    ),
-                    for (int i = 0; i < guru.length; i++)
-                      _buildStaticRow(i, guru[i]['nama']!, guru[i]['jabatan']!,
-                          screenWidth),
-                  ],
-                ),
               ),
               SizedBox(height: screenHeight * 0.03),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 5,
-              spreadRadius: 2,
-              offset: Offset(0, -2),
-            ),
-          ],
+      bottomNavigationBar: _buildBottomNav(screenHeight, screenWidth),
+    );
+  }
+
+  Widget _buildHeader(double screenWidth, double screenHeight) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.05,
+        vertical: screenHeight * 0.05,
+      ),
+      decoration: const BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
         ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              Row(
+                children: [
+                  Text(
+                    widget.username,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: screenWidth * 0.02),
+                  PopupMenuButton<String>(
+                    onSelected: (value) async {
+                      if (value == 'logout') {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'logout',
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, color: Colors.red),
+                            SizedBox(width: 10),
+                            Text('Logout'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 18,
+                      child: Icon(Icons.person, color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: screenHeight * 0.015),
+          Text(
+            "Data Guru - SDIT",
+            style: TextStyle(
+              fontSize: screenWidth * 0.06,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTableHeader(double screenWidth) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+      child: Container(
+        color: Colors.green[700],
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _navItem(context, "Dashboard", Icons.home,
-                HomeScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Absensi", Icons.assignment_ind_rounded,
-                AbsensiScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Nilai", Icons.my_library_books_rounded,
-                NilaiScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Data Guru & Anak", Icons.person,
-                DataScreen(username: widget.username), false, screenWidth),
-            _navItem(context, "Rekap Absensi", Icons.receipt_long,
-                RekapScreen(username: widget.username), true, screenWidth),
+            _buildHeaderCell('No', screenWidth, flex: 1),
+            _buildHeaderCell('Nama', screenWidth, flex: 3),
+            _buildHeaderCell('Jabatan', screenWidth, flex: 4),
           ],
         ),
       ),
@@ -243,6 +255,42 @@ class _DataGuruSDITState extends State<DataGuruSDIT> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav(double screenHeight, double screenWidth) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 5,
+            spreadRadius: 2,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _navItem(context, "Dashboard", Icons.home,
+              HomeScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Absensi", Icons.assignment_ind_rounded,
+              AbsensiScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Nilai", Icons.my_library_books_rounded,
+              NilaiScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Data Guru & Anak", Icons.person,
+              DataScreen(username: widget.username), false, screenWidth),
+          _navItem(context, "Rekap Absensi", Icons.receipt_long,
+              RekapScreen(username: widget.username), true, screenWidth),
         ],
       ),
     );

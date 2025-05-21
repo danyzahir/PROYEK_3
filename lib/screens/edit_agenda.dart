@@ -13,14 +13,73 @@ class EditAgendaScreen extends StatefulWidget {
 }
 
 class _EditAgendaScreenState extends State<EditAgendaScreen> {
-  final List<Map<String, String>> kegiatanList = [];
+  List<Map<String, dynamic>> kegiatanList = [];
   DateTime? selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAgendaData();
+  }
+
+  Future<void> fetchAgendaData() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('agenda')
+          .where('username', isEqualTo: widget.username)
+          .orderBy('tanggal', descending: false)
+          .get();
+
+      final List<Map<String, dynamic>> loadedKegiatan = [];
+      final today = DateTime.now();
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data();
+        dynamic tanggalData = data['tanggal'];
+
+        DateTime tanggal;
+        if (tanggalData is Timestamp) {
+          tanggal = tanggalData.toDate();
+        } else if (tanggalData is String) {
+          tanggal = DateFormat('yyyy-MM-dd').parse(tanggalData);
+        } else {
+          continue; // skip jika tidak bisa diparse
+        }
+
+        // Hapus jika tanggal < hari ini
+        if (tanggal.isBefore(DateTime(today.year, today.month, today.day))) {
+          await FirebaseFirestore.instance
+              .collection('agenda')
+              .doc(doc.id)
+              .delete();
+          continue;
+        }
+
+        String formattedDate = DateFormat('yyyy-MM-dd').format(tanggal);
+
+        loadedKegiatan.add({
+          'id': doc.id,
+          'nama': data['nama'] ?? '',
+          'tanggal': formattedDate,
+        });
+      }
+
+      setState(() {
+        kegiatanList = loadedKegiatan;
+      });
+    } catch (e) {
+      print("Gagal mengambil data agenda: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal mengambil data agenda: $e")),
+      );
+    }
+  }
 
   void _tambahAtauEditKegiatan({int? indexToEdit}) {
     String namaKegiatan =
-        indexToEdit != null ? kegiatanList[indexToEdit]['nama']! : '';
+        indexToEdit != null ? kegiatanList[indexToEdit]['nama'] : '';
     selectedDate = indexToEdit != null
-        ? DateFormat('yyyy-MM-dd').parse(kegiatanList[indexToEdit]['tanggal']!)
+        ? DateFormat('yyyy-MM-dd').parse(kegiatanList[indexToEdit]['tanggal'])
         : DateTime.now();
 
     showDialog(
@@ -79,36 +138,48 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                 if (namaKegiatan.trim().isNotEmpty && selectedDate != null) {
                   final newKegiatan = {
                     'nama': namaKegiatan.trim(),
-                    'tanggal': DateFormat('yyyy-MM-dd').format(selectedDate!),
+                    'tanggal': Timestamp.fromDate(selectedDate!),
                     'username': widget.username,
                     'timestamp': FieldValue.serverTimestamp(),
                   };
 
-                  setState(() {
+                  try {
                     if (indexToEdit != null) {
-                      kegiatanList[indexToEdit] = {
-                        'nama': namaKegiatan.trim(),
-                        'tanggal': DateFormat('yyyy-MM-dd')
-                            .format(selectedDate!),
-                      };
+                      String docId = kegiatanList[indexToEdit]['id'];
+                      await FirebaseFirestore.instance
+                          .collection('agenda')
+                          .doc(docId)
+                          .update(newKegiatan);
+
+                      setState(() {
+                        kegiatanList[indexToEdit] = {
+                          'id': docId,
+                          'nama': newKegiatan['nama'],
+                          'tanggal':
+                              DateFormat('yyyy-MM-dd').format(selectedDate!),
+                        };
+                      });
                     } else {
-                      kegiatanList.add({
-                        'nama': namaKegiatan.trim(),
-                        'tanggal': DateFormat('yyyy-MM-dd')
-                            .format(selectedDate!),
+                      final docRef = await FirebaseFirestore.instance
+                          .collection('agenda')
+                          .add(newKegiatan);
+
+                      setState(() {
+                        kegiatanList.add({
+                          'id': docRef.id,
+                          'nama': newKegiatan['nama'],
+                          'tanggal':
+                              DateFormat('yyyy-MM-dd').format(selectedDate!),
+                        });
                       });
                     }
-                  });
 
-                  try {
-                    await FirebaseFirestore.instance
-                        .collection('agenda')
-                        .add(newKegiatan);
                     Navigator.pop(context);
                   } catch (e) {
                     print("Gagal simpan ke Firestore: $e");
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Gagal menyimpan ke database')),
+                      const SnackBar(
+                          content: Text('Gagal menyimpan ke database')),
                     );
                   }
                 }
@@ -121,10 +192,23 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
     );
   }
 
-  void _hapusKegiatan(int index) {
-    setState(() {
-      kegiatanList.removeAt(index);
-    });
+  void _hapusKegiatan(int index) async {
+    try {
+      final docId = kegiatanList[index]['id'];
+      await FirebaseFirestore.instance
+          .collection('agenda')
+          .doc(docId)
+          .delete();
+
+      setState(() {
+        kegiatanList.removeAt(index);
+      });
+    } catch (e) {
+      print("Gagal menghapus data: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menghapus data: $e')),
+      );
+    }
   }
 
   @override
@@ -241,10 +325,11 @@ class _EditAgendaScreenState extends State<EditAgendaScreen> {
                       title: Text(item['nama'] ?? '',
                           style: const TextStyle(color: Colors.white)),
                       subtitle: Text(
-                          DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(
-                              DateFormat('yyyy-MM-dd')
-                                  .parse(item['tanggal'] ?? '')),
-                          style: const TextStyle(color: Colors.white70)),
+                        DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(
+                          DateFormat('yyyy-MM-dd').parse(item['tanggal']),
+                        ),
+                        style: const TextStyle(color: Colors.white70),
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

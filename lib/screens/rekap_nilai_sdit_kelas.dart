@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:proyek3/screens/rekap_siswa_sdit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'rekap_siswa_sdit.dart';
 import 'absensi.dart';
 import 'home_screen.dart';
 import 'nilai.dart';
@@ -86,7 +88,7 @@ class Rekapnilaisditkelas extends StatelessWidget {
                   ),
                   const SizedBox(height: 15),
                   const Text(
-                    "REKAP NILAI SDIT",
+                    "REKAP NILAI TKQ",
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -99,7 +101,6 @@ class Rekapnilaisditkelas extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Bulan
             const Text(
               "SEMESTER",
               style: TextStyle(
@@ -110,7 +111,7 @@ class Rekapnilaisditkelas extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Tabel Rekap
+            // Tabel Rekap dari Firebase
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -125,55 +126,95 @@ class Rekapnilaisditkelas extends StatelessWidget {
                     child: Row(
                       children: const [
                         Expanded(
-                            flex: 1,
-                            child: Center(
-                                child: Text("No",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)))),
+                          flex: 1,
+                          child: Center(
+                              child: Text("No",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                        ),
                         Expanded(
-                            flex: 3,
-                            child: Center(
-                                child: Text("Nama",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)))),
+                          flex: 3,
+                          child: Center(
+                              child: Text("Nama",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                        ),
                         Expanded(
-                            flex: 2,
-                            child: Center(
-                                child: Text("UTS",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)))),
+                          flex: 2,
+                          child: Center(
+                              child: Text("UTS",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                        ),
                         Expanded(
-                            flex: 2,
-                            child: Center(
-                                child: Text("UAS",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)))),
+                          flex: 2,
+                          child: Center(
+                              child: Text("UAS",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                        ),
                         Expanded(
-                            flex: 2,
-                            child: Center(
-                                child: Text("Rata2",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)))),
+                          flex: 2,
+                          child: Center(
+                              child: Text("Rata2",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 10),
 
-                  // Data Rows
-                  ..._buildTableRows([
-                    ["1", "Abdul", "85", "85", "85"],
-                    ["2", "Adnan", "", "", ""],
-                    ["3", "Bule", "", "", ""],
-                    ["4", "Candi", "", "", ""],
-                    ["5", "Dafa", "", "", ""],
-                    ["6", "Farah", "", "", ""],
-                    ["7", "Gion", "", "", ""],
-                  ]),
+                  // Data dari Firebase
+                  FutureBuilder<QuerySnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('nilai_sdit')
+                        .where('kelas', isEqualTo: '1')
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Text('Tidak ada data nilai tersedia.');
+                      }
+
+                      final docs = snapshot.data!.docs;
+
+                      return Column(
+                        children: List.generate(docs.length, (index) {
+                          final data = docs[index].data() as Map<String, dynamic>;
+                          final nama = data['nama'] ?? '-';
+                          final uts = data['uts']?.toString() ?? '-';
+                          final uas = data['uas']?.toString() ?? '-';
+                          final rata = data['rata2']?.toString() ?? '-';
+
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(flex: 1, child: Center(child: Text('${index + 1}'))),
+                                Expanded(flex: 3, child: Center(child: Text(nama))),
+                                Expanded(flex: 2, child: Center(child: Text(uts))),
+                                Expanded(flex: 2, child: Center(child: Text(uas))),
+                                Expanded(flex: 2, child: Center(child: Text(rata))),
+                              ],
+                            ),
+                          );
+                        }),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -218,28 +259,6 @@ class Rekapnilaisditkelas extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  List<Widget> _buildTableRows(List<List<String>> data) {
-    return data.map((row) {
-      return Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Expanded(flex: 1, child: Center(child: Text(row[0]))),
-            Expanded(flex: 3, child: Center(child: Text(row[1]))),
-            Expanded(flex: 2, child: Center(child: Text(row[2]))),
-            Expanded(flex: 2, child: Center(child: Text(row[3]))),
-            Expanded(flex: 2, child: Center(child: Text(row[4]))),
-          ],
-        ),
-      );
-    }).toList();
   }
 
   Widget _navItem(BuildContext context, String title, IconData icon,
