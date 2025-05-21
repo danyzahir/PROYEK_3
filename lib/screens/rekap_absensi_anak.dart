@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:proyek3/screens/rekap_absensi_anak.dart';
 import 'absensi.dart';
 import 'home_screen.dart';
 import 'nilai.dart';
 import 'data_guru_anak.dart';
 import 'login.dart';
-import 'rekap_guru_sdit.dart';
-import 'rekap_guru_tkq.dart';
+import 'rekap_absensi.dart';
+import 'rekap_absensi_anak_sdit_isi.dart';
 
-class RekapScreen extends StatelessWidget {
+class RekapAbsensAnakSDITKelas extends StatelessWidget {
   final String username;
 
-  const RekapScreen({super.key, required this.username});
+  const RekapAbsensAnakSDITKelas({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +24,6 @@ class RekapScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Header
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: screenWidth * 0.05,
@@ -98,7 +96,7 @@ class RekapScreen extends StatelessWidget {
                     ),
                     SizedBox(height: screenHeight * 0.015),
                     Text(
-                      "REKAP ABSENSI",
+                      "NILAI SDIT",
                       style: TextStyle(
                         fontSize: screenWidth * 0.06,
                         fontWeight: FontWeight.bold,
@@ -108,10 +106,7 @@ class RekapScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.02),
-
-              // Info Box
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Container(
@@ -156,86 +151,48 @@ class RekapScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.02),
-
-              // Menu Box (Wrap Layout)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Wrap(
                   spacing: screenWidth * 0.04,
                   runSpacing: screenHeight * 0.02,
                   alignment: WrapAlignment.center,
-                  children: [
-                    _menuBox(
-                      context,
-                      "Rekap Absensi Guru SDIT",
-                      Icons.people_alt,
+                  children: List.generate(6, (index) {
+                    final kelas = "KELAS ${index + 1}";
+                    final iconList = [
+                      Icons.looks_one_outlined,
+                      Icons.looks_two_outlined,
+                      Icons.looks_3_outlined,
+                      Icons.looks_4_outlined,
+                      Icons.looks_5_outlined,
+                      Icons.looks_6_outlined,
+                    ];
+                    return _menuBox(
+                      kelas,
+                      iconList[index],
                       screenWidth,
                       screenHeight,
                       () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                RekapAbsenGuruSDIT(username: username),
+                            builder: (context) => RekapAbsenAnakSDIT(
+                              username: username,
+                              namaKelas: kelas,
+                            ),
                           ),
                         );
                       },
-                    ),
-                    _menuBox(
-                      context,
-                      "Rekap Absensi Guru TKQ",
-                      Icons.people_alt,
-                      screenWidth,
-                      screenHeight,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RekapAbsenGuruTKQ(username: username),
-                          ),
-                        );
-                      },
-                    ),
-                    _menuBox(
-                      context,
-                      "Rekap Absensi\nAnak SDIT",
-                      Icons.people,
-                      screenWidth,
-                      screenHeight,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RekapAbsensAnakSDITKelas(username: username),
-                          ),
-                        );
-                      },
-                    ),
-                    _menuBox(
-                      context,
-                      "Rekap Absensi\nAnak TKQ",
-                      Icons.people,
-                      screenWidth,
-                      screenHeight,
-                      () {
-                        // TODO: Implementasi halaman Rekap Absensi Anak TKQ
-                      },
-                    ),
-                  ],
+                    );
+                  }),
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.02),
             ],
           ),
         ),
       ),
-
-      // Bottom Navigation
       bottomNavigationBar: Container(
         padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
         decoration: const BoxDecoration(
@@ -261,31 +218,24 @@ class RekapScreen extends StatelessWidget {
             _navItem(context, "Absensi", Icons.assignment_ind_rounded,
                 AbsensiScreen(username: username), false, screenWidth),
             _navItem(context, "Nilai", Icons.my_library_books_rounded,
-                NilaiScreen(username: username), false, screenWidth),
+                NilaiScreen(username: username), true, screenWidth),
             _navItem(context, "Data Guru & Anak", Icons.person,
                 DataScreen(username: username), false, screenWidth),
             _navItem(context, "Rekap Absensi", Icons.receipt_long,
-                RekapScreen(username: username), true, screenWidth),
+                RekapScreen(username: username), false, screenWidth),
           ],
         ),
       ),
     );
   }
 
-  Widget _menuBox(
-    BuildContext context,
-    String title,
-    IconData icon,
-    double screenWidth,
-    double screenHeight,
-    VoidCallback? onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width:
-            (screenWidth - (screenWidth * 0.08 * 2 + screenWidth * 0.04)) / 2,
-        height: screenHeight * 0.16,
+  Widget _menuBox(String title, IconData icon, double screenWidth,
+      double screenHeight, VoidCallback onTap) {
+    return SizedBox(
+      width: (screenWidth - (screenWidth * 0.08 * 2 + screenWidth * 0.04)) / 2,
+      height: screenHeight * 0.16,
+      child: GestureDetector(
+        onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,

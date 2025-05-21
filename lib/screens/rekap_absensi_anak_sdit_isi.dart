@@ -7,10 +7,15 @@ import 'nilai.dart';
 import 'data_guru_anak.dart';
 import 'login.dart';
 
-class RekapAbsenGuruTKQ extends StatelessWidget {
+class RekapAbsenAnakSDIT extends StatelessWidget {
   final String username;
+  final String namaKelas;
 
-  const RekapAbsenGuruTKQ({super.key, required this.username});
+  const RekapAbsenAnakSDIT({
+    super.key,
+    required this.username,
+    required this.namaKelas,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -85,9 +90,9 @@ class RekapAbsenGuruTKQ extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  const Text(
-                    "REKAP ABSEN GURU TKQ",
-                    style: TextStyle(
+                  Text(
+                    "REKAP ABSEN $namaKelas",
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -186,7 +191,7 @@ class RekapAbsenGuruTKQ extends StatelessWidget {
                           const SizedBox(width: 10),
                           const Expanded(
                             child: Text(
-                              "Ratna, S.Pd",
+                              "Gin",
                               style: TextStyle(fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),

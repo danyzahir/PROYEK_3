@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:proyek3/screens/rekap_absensi.dart';
 import 'absensi.dart';
 import 'home_screen.dart';
 import 'nilai.dart';
 import 'data_guru_anak.dart';
 import 'login.dart';
 
-class RekapguruScreen extends StatelessWidget {
+class RekapAbsenGuruSDIT extends StatelessWidget {
   final String username;
 
-  const RekapguruScreen({super.key, required this.username});
+  const RekapAbsenGuruSDIT({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -250,7 +251,7 @@ class RekapguruScreen extends StatelessWidget {
             _navItem(context, "Data Siswa & Guru", Icons.person,
                 DataScreen(username: username), false),
             _navItem(context, "Rekap Absensi", Icons.receipt_long,
-                RekapguruScreen(username: username), true),
+                RekapScreen(username: username), true),
           ],
         ),
       ),
