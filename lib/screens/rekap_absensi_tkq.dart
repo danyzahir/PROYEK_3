@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:proyek3/screens/rekap_absensi_anak.dart';
-import 'package:proyek3/screens/rekap_absensi_tkq.dart';
+import 'package:proyek3/screens/rekap_absensi_tkq_isi.dart';
 import 'absensi.dart';
 import 'home_screen.dart';
 import 'nilai.dart';
 import 'data_guru_anak.dart';
 import 'login.dart';
-import 'rekap_guru_sdit.dart';
-import 'rekap_guru_tkq.dart';
+import 'rekap_absensi.dart';
 
-class RekapScreen extends StatelessWidget {
+class RekapAbsensiTkq extends StatelessWidget {
   final String username;
 
-  const RekapScreen({super.key, required this.username});
+  const RekapAbsensiTkq ({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +19,7 @@ class RekapScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
+      backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -99,7 +97,7 @@ class RekapScreen extends StatelessWidget {
                     ),
                     SizedBox(height: screenHeight * 0.015),
                     Text(
-                      "REKAP ABSENSI",
+                      "REKAP ABSEN TKQ",
                       style: TextStyle(
                         fontSize: screenWidth * 0.06,
                         fontWeight: FontWeight.bold,
@@ -112,7 +110,7 @@ class RekapScreen extends StatelessWidget {
 
               SizedBox(height: screenHeight * 0.02),
 
-              // Menu Box (Wrap Layout)
+              // Menu Box
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Wrap(
@@ -121,68 +119,67 @@ class RekapScreen extends StatelessWidget {
                   alignment: WrapAlignment.center,
                   children: [
                     _menuBox(
-                      context,
-                      "Rekap Absensi Guru SDIT",
-                      Icons.people_alt,
+                      "Kelas A",
+                      CircleAvatar(
+                        backgroundColor: Colors.green,
+                        radius: screenWidth * 0.07,
+                        child: Text(
+                          "A",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       screenWidth,
                       screenHeight,
                       () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                RekapAbsenGuruSDIT(username: username),
+                            builder: (context) => RekapAbsensiTkqIsi(
+                              username: username,
+                            ),
                           ),
                         );
                       },
                     ),
                     _menuBox(
-                      context,
-                      "Rekap Absensi Guru TKQ",
-                      Icons.people_alt,
+                      "Kelas B",
+                      CircleAvatar(
+                        backgroundColor:  Colors.green,
+                        radius: screenWidth * 0.07,
+                        child: Text(
+                          "B",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       screenWidth,
                       screenHeight,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RekapAbsenGuruTKQ(username: username),
-                          ),
-                        );
-                      },
+                      () {},
                     ),
                     _menuBox(
-                      context,
-                      "Rekap Absensi\nAnak SDIT",
-                      Icons.people,
+                      "Kelas C",
+                      CircleAvatar(
+                        backgroundColor:  Colors.green,
+                        radius: screenWidth * 0.07,
+                        child: Text(
+                          "C",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       screenWidth,
                       screenHeight,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RekapAbsensAnakSDITKelas(username: username),
-                          ),
-                        );
-                      },
-                    ),
-                    _menuBox(
-                      context,
-                      "Rekap Absensi\nAnak TKQ",
-                      Icons.people,
-                      screenWidth,
-                      screenHeight,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RekapAbsensiTkq(username: username),
-                          ),
-                        );
-                      },
+                      () {},
                     ),
                   ],
                 ),
@@ -231,20 +228,19 @@ class RekapScreen extends StatelessWidget {
     );
   }
 
+  // ✅ Update fungsi _menuBox agar pakai Widget iconWidget
   Widget _menuBox(
-    BuildContext context,
     String title,
-    IconData icon,
+    Widget iconWidget,
     double screenWidth,
     double screenHeight,
-    VoidCallback? onTap,
+    VoidCallback onTap,
   ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width:
-            (screenWidth - (screenWidth * 0.08 * 2 + screenWidth * 0.04)) / 2,
-        height: screenHeight * 0.16,
+    return SizedBox(
+      width: (screenWidth - (screenWidth * 0.08 * 2 + screenWidth * 0.04)) / 2,
+      height: screenHeight * 0.16,
+      child: GestureDetector(
+        onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -261,7 +257,7 @@ class RekapScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: screenWidth * 0.09, color: Colors.black),
+              iconWidget,
               SizedBox(height: screenWidth * 0.01),
               Text(
                 title,
