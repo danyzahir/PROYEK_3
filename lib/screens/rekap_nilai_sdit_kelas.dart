@@ -88,7 +88,7 @@ class Rekapnilaisditkelas extends StatelessWidget {
                   ),
                   const SizedBox(height: 15),
                   const Text(
-                    "REKAP NILAI TKQ",
+                    "REKAP KELAS 1",
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
